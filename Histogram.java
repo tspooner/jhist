@@ -1,27 +1,29 @@
 
 public class Histogram {
 
-    private Tree<Integer> tree;
+    private Tree tree;
 
     public Histogram() { reset(); }
 
     public void reset() { tree = null; }
 
     public void add(float value) {
-        count++;
+        if (null == tree)
+            tree = new Tree();
 
-        if (null == root)
-            root = new Tree<Integer>(value, null, null);
-        else
-            root.add(value);
+        tree.add(value);
     }
 
+    public int total() { return this.tree.total(); }
+
     public static void main(String[] args) {
-        Tree<Integer> left = new Tree<>(new Integer(2), null, null);
-        Tree<Integer> right = new Tree<>(new Integer(3), null, null);
+        Histogram me = new Histogram();
 
-        tree = new Tree<>(new Integer(1), null, null);
+        me.add(0f);
+        me.add(2f);
+        me.add(3f);
+        me.add(4f);
 
-        System.out.println(tree.total());
+        System.out.println(me.total());
     }
 }
