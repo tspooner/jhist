@@ -1,29 +1,27 @@
+import java.util.Random;
 
 public class Histogram {
 
-    private Tree tree;
+    private HistogramStorage store;
 
-    public Histogram() { reset(); }
-
-    public void reset() { tree = null; }
-
-    public void add(float value) {
-        if (null == tree)
-            tree = new Tree();
-
-        tree.add(value);
+    public Histogram(int size, double min, double max) {
+        this.store = new StaticStorage(size, min, max);
     }
 
-    public int total() { return this.tree.total(); }
+    public void add(double value) { store.add(value); }
+
+    public void dump() {
+        System.out.println(store.toPrettyString());
+    }
 
     public static void main(String[] args) {
-        Histogram me = new Histogram();
+        Histogram me = new Histogram(20, 0, 1);
 
-        me.add(0f);
-        me.add(2f);
-        me.add(3f);
-        me.add(4f);
+        Random rng = new Random();
 
-        System.out.println(me.total());
+        for (int i = 0; i < 10000; i++)
+            me.add(rng.nextDouble());
+
+        me.dump();
     }
 }
