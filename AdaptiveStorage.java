@@ -1,76 +1,55 @@
+// Import statements
+import java.text.DecimalFormat;
 
 public class AdaptiveStorage extends HistogramStorage {
-    private int count;
-    private double lower;
-    private double upper;
 
-    private AdaptiveStorage root;
-    private AdaptiveStorage left;
-    private AdaptiveStorage right;
+    private Tree<Bin> store;
 
-    public AdaptiveStorage() { reset(); }
+    private int uncounted = 0;
 
-    public AdaptiveStorage(AdaptiveStorage root, int count, double lower, double upper) {
-        reset();
-
-        this.root = root;
-
-        this.count = count;
-        this.upper = upper;
-        this.lower = lower;
+    public AdaptiveStorage() {
+        store = new Tree<Bin>(new Bin());
     }
 
-    public void reset() {
-        this.root = this;
-
-        this.count = 0;
-        this.lower = -Double.MAX_VALUE;
-        this.upper = Double.MAX_VALUE;
-
-        this.left = this.right = null;
+    public AdaptiveStorage(double min, double max) {
+        store = new Tree<Bin>(new Bin(0, min, max));
     }
 
     public void add(double value) {
-        if (value >= this.lower && value <= this.upper) {
-            if (null != this.left && null != this.right) {
-                this.left.add(value);
-                this.right.add(value);
-            } else if (this.count > this.root.getSplitLimit() && this.lower != this.upper) {
-                double splitAt = (this.lower + this.upper) / 2;
-                int splitCount = this.count++ / 2;
-
-                this.left = new AdaptiveStorage(this.root, splitCount, this.lower, splitAt);
-                this.right = new AdaptiveStorage(this.root, splitCount, splitAt, this.upper);
-
-                this.count = 0;
-            } else { this.count++; }
+        if (!store.getRoot().getData().contains(value)) {
+            uncounted++;
+        } else {
+            for (Bin bin : store.getLeaves()) {
+                if (bin.contains(value)) {
+                    bin.increment();
+                    break;
+                }
+            }
         }
     }
 
-    public int getTotal() {
-        int sum = count;
-
-        if (null != left) sum += left.getTotal();
-        if (null != right) sum += right.getTotal();
-
-        return sum;
-    }
-
-    private int getSplitLimit() {
-        int limit = this.getTotal() / 10;
-
-        if (0 == limit) limit = 1;
-
-        return limit;
-    }
-
-    public String toCsv() {
-		String csv = "";
-
-		return csv;
-	}
-
+    // Export methods
+    public String toCsv() { return ""; }
     public int[] toArray() { return new int[2]; }
 
-    public String toPrettyString() { return ""; }
+    public String toPrettyString() {
+        StringBuilder sb = new StringBuilder();
+
+		String sep = System.getProperty("line.separator");
+		DecimalFormat df = new DecimalFormat("#0.00");
+		DecimalFormat dfMore = new DecimalFormat("#0.0000");
+
+        sb.append(sep);
+
+		// Add all the leaf nodes
+        for (Bin bin : store.getLeaves()) {
+			sb.append(
+				"Bin @ " + bin.getCentre() + ": " + bin.getCount() +
+				"\t[\u03c3 = " + df.format(error(bin.getCount())) + "]" +
+				"\t(" + dfMore.format(bin.getCentre()) + ")" + sep
+			); // U+03C3 is a sigma character
+		}
+
+        return sb.toString();
+    }
 }

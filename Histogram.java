@@ -4,8 +4,8 @@ public class Histogram {
 
     private HistogramStorage store;
 
-    public Histogram(int size, double min, double max) {
-        this.store = new StaticStorage(size, min, max);
+    public Histogram(double min, double max) {
+        this.store = new AdaptiveStorage(min, max);
     }
 
     public void add(double value) { store.add(value); }
@@ -15,12 +15,12 @@ public class Histogram {
     }
 
     public static void main(String[] args) {
-        Histogram me = new Histogram(20, 0, 1);
+        Histogram me = new Histogram(-10, 10);
 
         Random rng = new Random();
 
-        for (int i = 0; i < 10000; i++)
-            me.add(rng.nextDouble());
+        for (int i = 0; i < 50; i++)
+            me.add(rng.nextGaussian());
 
         me.dump();
     }

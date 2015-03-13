@@ -19,7 +19,7 @@ public class StaticStorage extends HistogramStorage {
 
         this.binLow = min;
         this.binHigh = max;
-        this.binWidth = binWidth(size, min, max);
+        this.binWidth = (double) ((max - min) / size);
 
         this.overflows = 0;
         this.underflows = 0;
