@@ -3,69 +3,43 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Tree<T> {
-    private Node<T> root;
-    private List<Node<T>> leaves;
+    private T data;
+    private Tree<T> left, right;
 
-    public Tree(T rootData) {
-        root = new Node<T>(rootData, null);
-
-        leaves = new ArrayList<Node<T>>();
-        linkLeaves();
+    public Tree(T data, Tree<T> l, Tree<T> r) {
+        this.data = data;
+        left = l; right = r;
     }
 
-    public Node<T> getRoot() { return root; }
+    public Tree(T data) { this(data, null, null); }
 
-    public List<T> getLeaves() {
-        int size = leaves.size();
-        List<T> data = new ArrayList<T>();
+    public T getValue() { return data; }
+    public void setValue(T data) { this.data = data; }
 
-        for (Node<T> node : leaves)
-            data.add(node.getData());
+    public boolean isInner() { return left != null || right != null; }
+    public boolean isLeaf() { return left == null && right == null; }
 
-        return data;
+    public boolean hasLeft() { return left != null; }
+    public Tree<T> getLeft() { return left; }
+    public void setLeft(Tree<T> l) { left = l; }
+
+    public boolean hasRight() { return right != null; }
+    public Tree<T> getRight() { return right; }
+    public void setRight(Tree<T> r) { right = r; }
+
+    public List<Tree<T>> fringe() {
+        List<Tree<T>> f = new ArrayList<Tree<T>>();
+        addToFringe(f);
+
+        return f;
     }
 
-    private List<Node<T>> getLeaves(Node<T> node) {
-        List<Node<T>> nodes = new ArrayList<Node<T>>();
-
-        if (!node.hasChildren()) {
-            nodes.add(root);
-            return nodes;
+    private void addToFringe(List<Tree<T>> f) {
+        if (isLeaf())
+            f.add(this);
+        else {
+            if (hasLeft()) left.addToFringe(f);
+            if (hasRight()) right.addToFringe(f);
         }
-
-        for (Node<T> child : node.getChildren()) {
-            if (!child.hasChildren()) nodes.add(child);
-            else getLeaves(child);
-        }
-
-        return nodes;
-    }
-
-    private void linkLeaves() {
-        leaves.clear();
-        leaves = getLeaves(root);
-    }
-
-    public static class Node<T> {
-        private T data;
-        private Node<T> parent;
-        private List<Node<T>> children;
-
-        public Node(T data, Node<T> parent) {
-            this.data = data;
-            this.parent = parent;
-            this.children = new ArrayList<Node<T>>();
-        }
-
-        public Node(T data, Node<T> parent, List<Node<T>> children) {
-            this.data = data;
-            this.parent = parent;
-            this.children = children;
-        }
-
-        public T getData() { return data; }
-
-        public List<Node<T>> getChildren() { return children; }
-        public boolean hasChildren() { return (children.size() > 0); }
     }
 }
