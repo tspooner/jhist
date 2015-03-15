@@ -18,28 +18,49 @@ public class AdaptiveStorage extends HistogramStorage {
 
     public void add(double value) {
         List<Tree<Bin>> fringe = tree.fringe();
+        boolean counted = false;
 
         for (Tree<Bin> leaf : fringe) {
-            Bin bin = leaf.getValue();
-            if (bin.contains(value)) {
-                total++;
+            if (counted) break;
 
-                if (bin.count >= getSplitLimit()) {
+            Bin bin = leaf.getValue();
+
+            if (bin.contains(value)) {
+                counted = true;
+
+                total++;
+                bin.increment();
+
+                if (bin.count >= getSplitLimit() && bin.min != bin.max) {
                     List<Bin> newBins;
 
                     if (value > bin.getCentre())
-                        newBins = bin.split(false);
+                        newBins = bin.split();
                     else
-                        newBins = bin.split(true);
-
-
-                    if (newBins.get(0).contains(value)) newBins.get(0).increment();
-                    else newBins.get(1).increment();
+                        newBins = bin.split();
 
                     leaf.setLeft(new Tree<Bin>(newBins.get(0)));
                     leaf.setRight(new Tree<Bin>(newBins.get(1)));
-                } else bin.increment();
-            } else continue;
+
+                    if (bin.count % 2 != 0) {
+                        if (leaf.getLeft().getValue().contains(value))
+                            leaf.getLeft().getValue().increment();
+                        else
+                            leaf.getRight().getValue().increment();
+                    }
+                }
+            }
+        }
+
+        Bin toExtend;
+        if (!counted) {
+            if (fringe.get(0).getValue().min > value)
+                toExtend = fringe.get(0).getValue();
+            else
+                toExtend = fringe.get((fringe.size()-1)).getValue();
+
+            toExtend.extend(value);
+            toExtend.increment();
         }
     }
 
@@ -59,7 +80,17 @@ public class AdaptiveStorage extends HistogramStorage {
     }
 
     // Export methods
-    public String toCsv() { return ""; }
+    public String toCsv() {
+        String csv = "";
+
+        for (Tree<Bin> f : tree.fringe()) {
+            Bin bin = f.getValue();
+            csv += bin.getCentre() + "," + bin.getDensity(total) + "\n";
+        }
+
+        return csv;
+    }
+
     public int[] toArray() { return new int[2]; }
 
     public String toPrettyString() {
@@ -78,12 +109,9 @@ public class AdaptiveStorage extends HistogramStorage {
 			sb.append(
 				"Bin @ " + dfMore.format(bin.getCentre()) + ": " + bin.getCount() +
 				"\t[\u03c3 = " + df.format(error(bin.getCount())) + "]" +
-				"\t(" + dfMore.format(bin.getCentre()) + ")" + sep
+				"\t(" + dfMore.format(bin.max - bin.min) + ")" + sep
 			); // U+03C3 is a sigma character
 		}
-
-        sb.append(sep + "Total Count:\t" + total);
-        sb.append(sep + "Total Count:\t" + getTotal());
 
         return sb.toString();
     }

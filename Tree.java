@@ -16,9 +16,6 @@ public class Tree<T> {
     public T getValue() { return data; }
     public void setValue(T data) { this.data = data; }
 
-    public boolean isInner() { return left != null || right != null; }
-    public boolean isLeaf() { return left == null && right == null; }
-
     public boolean hasLeft() { return left != null; }
     public Tree<T> getLeft() { return left; }
     public void setLeft(Tree<T> l) { left = l; }
@@ -26,6 +23,9 @@ public class Tree<T> {
     public boolean hasRight() { return right != null; }
     public Tree<T> getRight() { return right; }
     public void setRight(Tree<T> r) { right = r; }
+
+    public boolean isInner() { return left != null || right != null; }
+    public boolean isLeaf() { return left == null && right == null; }
 
     public List<Tree<T>> fringe() {
         List<Tree<T>> f = new ArrayList<Tree<T>>();

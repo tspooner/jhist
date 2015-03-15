@@ -49,22 +49,23 @@ abstract class HistogramStorage {
         public int getCount() { return this.count; }
         public double getCentre() { return (max + min) / 2; }
 
-        public List<Bin> split() { return split(true); }
-        public List<Bin> split(boolean toLeft) {
+        public double getWidth() { return max - min; }
+
+        public double getDensity(int total) { return count / (total * getWidth()); }
+
+        public void extend(double extendTo) {
+            if (extendTo > max) max = extendTo;
+            else min = extendTo;
+        }
+
+        public List<Bin> split() {
             List<Bin> split = new ArrayList<Bin>();
 
             double splitAt = (this.min + this.max) / 2;
-            boolean isOdd = count % 2 == 0;
-
             int splitCount = (count / 2);
 
-            if (toLeft) {
-                split.add(new Bin(splitCount, min, splitAt));
-                split.add(new Bin((splitCount+(isOdd?1:0)), splitAt, max));
-            } else {
-                split.add(new Bin((splitCount+(isOdd?1:0)), min, splitAt));
-                split.add(new Bin(splitCount, splitAt, max));
-            }
+            split.add(new Bin(splitCount, min, splitAt));
+            split.add(new Bin(splitCount, splitAt, max));
 
             return split;
         }
