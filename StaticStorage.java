@@ -15,7 +15,8 @@ public class StaticStorage extends HistogramStorage {
 
     public StaticStorage(int size, double min, double max) {
         this.size = size;
-        this.data = new int[size];
+
+        reset();
 
         this.binLow = min;
         this.binHigh = max;
@@ -24,6 +25,8 @@ public class StaticStorage extends HistogramStorage {
         this.overflows = 0;
         this.underflows = 0;
     }
+
+    public void reset() { this.data = new int[size]; }
 
     public void add(double value) {
         if (value > binHigh || value < binLow) {
@@ -35,10 +38,12 @@ public class StaticStorage extends HistogramStorage {
     }
 
     public String toCsv() {
-		String csv = "";
+		String csv = "bin_centre,bin_width,bin_count\n";
 
 		for(int i = 0; i < data.length; i++)
-			csv += data[i] + ",";
+			csv += (binWidth*(i+0.5)) + "," +
+                   binWidth + "," +
+                   data[i] + "\n";
 
 		return csv;
 	}

@@ -1,8 +1,9 @@
 // Import statements
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Tree<T> {
+public class Tree<T> implements Iterable<Tree<T>> {
     private T data;
     private Tree<T> left, right;
 
@@ -12,6 +13,11 @@ public class Tree<T> {
     }
 
     public Tree(T data) { this(data, null, null); }
+
+    public void reset() {
+        data = null;
+        left = right = null;
+    }
 
     public T getValue() { return data; }
     public void setValue(T data) { this.data = data; }
@@ -41,5 +47,10 @@ public class Tree<T> {
             if (hasLeft()) left.addToFringe(f);
             if (hasRight()) right.addToFringe(f);
         }
+    }
+
+    @Override
+    public Iterator<Tree<T>> iterator() {
+        return fringe().iterator();
     }
 }

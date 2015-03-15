@@ -6,11 +6,12 @@ abstract class HistogramStorage {
 
     // Base methods
     public abstract void add(double value);
-
     public void add(double[] values) {
         for (double value : values)
             this.add(value);
     }
+
+    public abstract void reset();
 
     // Export methods
     public abstract String toCsv();
@@ -27,18 +28,15 @@ abstract class HistogramStorage {
         public double min;
         public double max;
 
-        public Bin() {
-            this.count = 0;
-            this.min = -Double.MAX_VALUE;
-            this.max = Double.MAX_VALUE;
-        }
-
         public Bin(int count, double min, double max) {
             this.count = count;
             this.min = min;
             this.max = max;
         }
 
+        public Bin() { this(0, -Double.MAX_VALUE, Double.MAX_VALUE); }
+
+        public void reset() { count = 0; }
         public void increment() { this.count++; }
         public void decrement() { this.count--; }
 
@@ -51,6 +49,7 @@ abstract class HistogramStorage {
 
         public double getWidth() { return max - min; }
 
+        public double getDensity() { return getDensity(1); }
         public double getDensity(int total) { return count / (total * getWidth()); }
 
         public void extend(double extendTo) {

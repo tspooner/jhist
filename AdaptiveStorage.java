@@ -8,12 +8,18 @@ public class AdaptiveStorage extends HistogramStorage {
     private Tree<Bin> tree;
     private int total = 0;
 
-    public AdaptiveStorage() {
-        tree = new Tree<Bin>(new Bin());
-    }
-
     public AdaptiveStorage(double min, double max) {
         tree = new Tree<Bin>(new Bin(0, min, max));
+    }
+
+    public AdaptiveStorage() { tree = new Tree<Bin>(new Bin()); }
+
+    public void reset() {
+        Bin old = tree.getValue();
+
+        tree.reset(); old.reset();
+
+        tree.setValue(old);
     }
 
     public void add(double value) {
@@ -21,7 +27,7 @@ public class AdaptiveStorage extends HistogramStorage {
         boolean counted = false;
 
         for (Tree<Bin> leaf : fringe) {
-            if (counted) break;
+            if (counted) return;
 
             Bin bin = leaf.getValue();
 
@@ -81,17 +87,29 @@ public class AdaptiveStorage extends HistogramStorage {
 
     // Export methods
     public String toCsv() {
-        String csv = "";
+        String csv = "bin_centre,bin_width,bin_count,bin_density,bin_unit_density\n";
 
-        for (Tree<Bin> f : tree.fringe()) {
+        for (Tree<Bin> f : tree) {
             Bin bin = f.getValue();
-            csv += bin.getCentre() + "," + bin.getDensity(total) + "\n";
+            csv += bin.getCentre() + "," +
+                   bin.getWidth() + "," +
+                   bin.count + "," +
+                   bin.getDensity() + "," +
+                   bin.getDensity(total) + "\n";
         }
 
         return csv;
     }
 
-    public int[] toArray() { return new int[2]; }
+    public int[] toArray() {
+        List<Tree<Bin>> fringe = tree.fringe();
+        int[] arr = new int[fringe.size()];
+
+        for (int i = 0; i < arr.length; i++)
+            arr[i] = (int) fringe.get(i).getValue().getDensity(total);
+
+        return arr;
+    }
 
     public String toPrettyString() {
         StringBuilder sb = new StringBuilder();
