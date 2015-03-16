@@ -1,3 +1,5 @@
+package histogram;
+
 // Import statements
 import java.util.Random;
 import java.io.FileWriter;
@@ -23,9 +25,14 @@ public class Histogram {
 
     public void add(double value) { store.add(value); }
 
-    public String toCsv() { return store.toCsv(); }
-    public int[] toArray() { return store.toArray(); }
-    public String toPrettyString() { return store.toPrettyString(); }
+    public int getTotal() { return store.getTotal(); }
+
+    public int getCount(double value) { return store.getCount(value); }
+    public int getAccumCount(double value) { return store.getAccumCount(value); }
+    public int getPercentile(double value) { return store.getPercentile(value); }
+
+    public double getDensity(double value) { return store.getDensity(value); }
+    public double getValueAtPercentile(int perc) { return store.getValueAtPercentile(perc); }
 
     public boolean writeToDisk(String filepath) throws IOException {
 		FileWriter file;
@@ -46,14 +53,17 @@ public class Histogram {
 		}
 	}
 
+    public String toCsv() { return store.toCsv(); }
+    public int[] toArray() { return store.toArray(); }
+    public String toPrettyString() { return store.toPrettyString(); }
 
     public static void main(String[] args) throws IOException {
         Histogram me = new Histogram(-10, 10);
         Random rng = new Random();
 
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 100000; i++)
             me.add(rng.nextGaussian());
 
-        me.writeToDisk("./tmp.csv");
+        // me.writeToDisk("./tmp.csv");
     }
 }

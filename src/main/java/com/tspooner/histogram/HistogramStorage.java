@@ -1,17 +1,31 @@
+package histogram;
+
 // Import statements
 import java.util.List;
 import java.util.ArrayList;
 
 abstract class HistogramStorage {
+    protected int total = 0;
 
     // Base methods
+    public abstract void reset();
+
     public abstract void add(double value);
     public void add(double[] values) {
         for (double value : values)
             this.add(value);
     }
 
-    public abstract void reset();
+    public int getTotal() { return total; }
+
+    public abstract int getCount(double value);
+    public abstract int getAccumCount(double value);
+    public int getPercentile(double value) {
+        return getAccumCount(value) / getTotal();
+    }
+
+    public abstract double getDensity(double value);
+    public abstract double getValueAtPercentile(int perc);
 
     // Export methods
     public abstract String toCsv();
@@ -48,8 +62,6 @@ abstract class HistogramStorage {
         public double getCentre() { return (max + min) / 2; }
 
         public double getWidth() { return max - min; }
-
-        public double getDensity() { return getDensity(1); }
         public double getDensity(int total) { return count / (total * getWidth()); }
 
         public void extend(double extendTo) {

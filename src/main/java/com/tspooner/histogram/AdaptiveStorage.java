@@ -1,12 +1,12 @@
+package histogram;
+
 // Import statements
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.ArrayList;
 
 public class AdaptiveStorage extends HistogramStorage {
-
     private Tree<Bin> tree;
-    private int total = 0;
 
     public AdaptiveStorage(double min, double max) {
         tree = new Tree<Bin>(new Bin(0, min, max));
@@ -70,7 +70,42 @@ public class AdaptiveStorage extends HistogramStorage {
         }
     }
 
-    public int getTotal() { return getTotal(tree); }
+    public int getCount(double value) {
+        Bin bin = getBin(value);
+        return (null != bin) ? bin.count : 0;
+    }
+
+    public int getAccumCount(double value) {
+        int sum = 0;
+        for (Tree<Bin> leaf : tree) {
+            sum += leaf.getValue().count;
+            if (leaf.getValue().contains(value)) break;
+        }
+
+        return sum;
+    }
+
+    public double getDensity(double value) {
+        Bin bin = getBin(value);
+
+        return (null != bin) ? bin.getDensity(getTotal()) : 0;
+    }
+
+    public double getValueAtPercentile(int perc) {
+        int pSum = (int) getTotal(tree) * perc / 100;
+        int cSum = 0;
+        Bin bin = null;
+
+        for (Tree<Bin> leaf : tree) {
+            cSum += leaf.getValue().count;
+            if (cSum >= pSum) {
+                bin = leaf.getValue();
+                break;
+            }
+        }
+
+        return (null != bin) ? bin.getCentre() : 100;
+    }
 
     private int getTotal(Tree<Bin> node) {
         int sum = 0;
@@ -80,9 +115,15 @@ public class AdaptiveStorage extends HistogramStorage {
         return sum;
     }
 
+    private Bin getBin(double value) {
+        for (Tree<Bin> leaf : tree)
+            if (leaf.getValue().contains(value)) return leaf.getValue();
+
+        return null;
+    }
+
     private int getSplitLimit() {
-        if (total == 1) return 1;
-        else return total / 10;
+        return (total == 1) ? 1 : total / 10;
     }
 
     // Export methods
@@ -94,7 +135,6 @@ public class AdaptiveStorage extends HistogramStorage {
             csv += bin.getCentre() + "," +
                    bin.getWidth() + "," +
                    bin.count + "," +
-                   bin.getDensity() + "," +
                    bin.getDensity(total) + "\n";
         }
 

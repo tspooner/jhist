@@ -1,8 +1,9 @@
+package histogram;
+
 // Import statements
 import java.text.DecimalFormat;
 
 public class StaticStorage extends HistogramStorage {
-
     private int size; // Number of bins
     private int[] data; // Bin counts
 
@@ -33,17 +34,55 @@ public class StaticStorage extends HistogramStorage {
 			if (value > binHigh) overflows++; // Number is too large
 			if (value < binLow) underflows++; // Number is too small
 		} else {
-			data[(int) ((value - binLow) / binWidth)]++;
+			data[getOffset(value)]++;
 		}
     }
 
+    public int getCount(double value) { return data[getOffset(value)]; }
+    public int getAccumCount(double value) {
+        int sum = 0;
+        int offset = getOffset(value);
+
+        for (int i = 0; i < data.length; i++) {
+            sum += data[i];
+            if (i == offset) break;
+        }
+
+        return sum;
+    }
+
+    public double getDensity(double value) {
+        return data[getOffset(value)] / (getTotal() * binWidth);
+    }
+
+    public double getValueAtPercentile(int perc) {
+        int pSum = (int) getTotal() * perc / 100;
+        int cSum = 0;
+        int offset = size;
+
+        for (int i = 0; i < data.length; i++) {
+            cSum += data[i];
+            if (cSum >= pSum) {
+                offset = i;
+                break;
+            }
+        }
+
+        return (binWidth*(offset + 0.5));
+    }
+
+    private int getOffset(double value) {
+        return (int) ((value - binLow) / binWidth);
+    }
+
     public String toCsv() {
-		String csv = "bin_centre,bin_width,bin_count\n";
+        String csv = "bin_centre,bin_width,bin_count,bin_density,bin_unit_density\n";
 
 		for(int i = 0; i < data.length; i++)
 			csv += (binWidth*(i+0.5)) + "," +
                    binWidth + "," +
-                   data[i] + "\n";
+                   data[i] + "," +
+                   getDensity(data[i]) + "\n";
 
 		return csv;
 	}
