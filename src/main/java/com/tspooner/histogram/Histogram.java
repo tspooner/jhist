@@ -56,14 +56,4 @@ public class Histogram {
     public String toCsv() { return store.toCsv(); }
     public int[] toArray() { return store.toArray(); }
     public String toPrettyString() { return store.toPrettyString(); }
-
-    public static void main(String[] args) throws IOException {
-        Histogram me = new Histogram(-10, 10);
-        Random rng = new Random();
-
-        for (int i = 0; i < 100000; i++)
-            me.add(rng.nextGaussian());
-
-        // me.writeToDisk("./tmp.csv");
-    }
 }
