@@ -2,3 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 mainClassName = 'com.tspooner.Histogram'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
