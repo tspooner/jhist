@@ -1,4 +1,4 @@
-package histogram;
+package com.tspooner.histogram;
 
 // Import statements
 import java.util.List;
@@ -19,6 +19,8 @@ abstract class HistogramStorage {
     public int getTotal() { return total; }
 
     public abstract int getCount(double value);
+    public abstract int getCount(int index);
+    
     public abstract int getAccumCount(double value);
     public int getPercentile(double value) {
         return getAccumCount(value) / getTotal();

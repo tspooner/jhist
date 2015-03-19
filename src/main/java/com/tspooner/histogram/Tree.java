@@ -1,4 +1,4 @@
-package histogram;
+package com.tspooner.histogram;
 
 // Import statements
 import java.util.List;

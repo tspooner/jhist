@@ -1,4 +1,4 @@
-package histogram;
+package com.tspooner.histogram;
 
 // Import statements
 import java.text.DecimalFormat;
@@ -39,6 +39,14 @@ public class StaticStorage extends HistogramStorage {
     }
 
     public int getCount(double value) { return data[getOffset(value)]; }
+    
+    public int getCount(int index) {
+        if (index < data.length)
+            return data[index];
+        else
+            return 0;
+    }
+
     public int getAccumCount(double value) {
         int sum = 0;
         int offset = getOffset(value);

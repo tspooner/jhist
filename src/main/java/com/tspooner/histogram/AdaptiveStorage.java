@@ -1,4 +1,4 @@
-package histogram;
+package com.tspooner.histogram;
 
 // Import statements
 import java.text.DecimalFormat;
@@ -73,6 +73,14 @@ public class AdaptiveStorage extends HistogramStorage {
     public int getCount(double value) {
         Bin bin = getBin(value);
         return (null != bin) ? bin.count : 0;
+    }
+
+    public int getCount(int index) {
+        List<Tree<T>> leaves = tree.fringe();
+        if (index < leaves.size())
+            return leaves.get(index).getValue().count;
+        else
+            return 0;
     }
 
     public int getAccumCount(double value) {
