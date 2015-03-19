@@ -76,7 +76,7 @@ public class AdaptiveStorage extends HistogramStorage {
     }
 
     public int getCount(int index) {
-        List<Tree<T>> leaves = tree.fringe();
+        List<Tree<Bin>> leaves = tree.fringe();
         if (index < leaves.size())
             return leaves.get(index).getValue().count;
         else

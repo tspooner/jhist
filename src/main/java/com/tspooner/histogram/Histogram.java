@@ -8,9 +8,13 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 
 /**
- * This class acts as a bridge for the different data storage implementations.
+ * A {@code Histogram} object that allows a client estimate the probability distribution
+ * of a continuous variable. Adding values to the {@code Histogram} instance
+ * will record the frequency of hits within certain ranges of values.
+ *
+ * <p>This class acts as a bridge for the different data storage implementations.
  * It contains methods for adding and resetting the histogram frequency data,
- * and some useful methods for basic statistical analysis.
+ * and some useful methods for basic statistical analysis.</p>
  *
  * <p>The majority of the methods in this class do nothing but relay the
  * commands to the appropriate HistogramStorage instance. They are there to
@@ -43,7 +47,7 @@ public class Histogram {
     /**
      * Constructs a newly allocated {@code Histogram} object by instantiating an
      * {@code AdaptiveStorage} instance for data manipulation, between {@code min}
-     * and {}@code max}.
+     * and {@code max}.
      *
      * @param   min the lower limit on bin bounds.
      * @param   max the upper limit on bin bounds.
@@ -83,34 +87,66 @@ public class Histogram {
     /**
      * Returs the total number of counts from all the bins.
      *
-     * @return the total number of counts.
+     * @return The total number of counts.
      */
     public int getTotal() { return store.getTotal(); }
 
     /**
-     * Finds the bin which contains {@code value} and returns the bin's count.
+     * Returns the number of counts in the bin which contains {@code value}.
      *
      * @param   value  the number which is contained by the target bin's bounds.
-     * @return  the selected bin's count.
+     * @return  The selected bin's count.
      */
     public int getCount(double value) { return store.getCount(value); }
 
     /**
-     * Finds the bin at index {@code i} and returns the bin's count.
+     * Returns the number of counts in the bin at index {@code i}.
      *
      * @param   i  the bin's index.
-     * @return  the selected bin's count.
+     * @return  The selected bin's count.
      */
     public int getCount(int i) { return store.getCount(i); }
 
+    /**
+     * Returns the cumulative count up to the bin which contains {@code value}.
+     *
+     * @param   value   the number which is contained by the target bin's bounds.
+     * @return  The cumulative count total.
+     */
     public int getAccumCount(double value) { return store.getAccumCount(value); }
 
+    /**
+     * Returns the percentile given by the bin which contains {@code value}.
+     *
+     * @param   value   the number which is contained by the target bin's bounds.
+     * @return  The percentile of the selected bin.
+     */
     public int getPercentile(double value) { return store.getPercentile(value); }
 
-    public double getDensity(double value) { return store.getDensity(value); }
-
+    /**
+     * Returns the bin centre of the bin which corresponds to the percentile
+     * {@code perc}.
+     *
+     * @param   perc    the requested percentile.
+     * @return  The value given by the requested percentile.
+     */
     public double getValueAtPercentile(int perc) { return store.getValueAtPercentile(perc); }
 
+    /**
+     * Returns the unit density of the bin which contains {@code value}.
+     *
+     * @param   value   the number which is contained by the target bin's bounds.
+     * @return  The density of the selected bin.
+     */
+    public double getDensity(double value) { return store.getDensity(value); }
+
+    /**
+     * Write the histogram data to the disk in CSV format.
+     *
+     * @throws  IOException exceptions caused while trying to save the file.
+     * @param   filepath    the filepath at which to save the data to.
+     * @return  True if the file was written successfully.
+     */
     public boolean writeToDisk(String filepath) throws IOException {
 		FileWriter file;
 		PrintWriter toFile = null;
@@ -130,9 +166,25 @@ public class Histogram {
 		}
 	}
 
+    /**
+     * Returns the histogram data as a string in csv format.
+     *
+     * @return  The CSV formatted string.
+     */
     public String toCsv() { return store.toCsv(); }
 
+    /**
+     * Returns the histogram bin counts as an array of integers.
+     *
+     * @return The histogram counts.
+     */
     public int[] toArray() { return store.toArray(); }
 
+    /**
+     * Returns a nicely formatted string of the histogram data, ready to be
+     * printed to the console.
+     *
+     * @return  The nicely formatted histogram data.
+     */
     public String toPrettyString() { return store.toPrettyString(); }
 }
