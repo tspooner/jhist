@@ -1,9 +1,9 @@
 package com.tspooner.histogram;
 
 // Import statements
+
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.ArrayList;
 
 public class AdaptiveStorage extends HistogramStorage {
     private Tree<Bin> tree;
@@ -12,7 +12,9 @@ public class AdaptiveStorage extends HistogramStorage {
         tree = new Tree<Bin>(new Bin(0, min, max));
     }
 
-    public AdaptiveStorage() { tree = new Tree<Bin>(new Bin()); }
+    public AdaptiveStorage() {
+        tree = new Tree<Bin>(new Bin());
+    }
 
     public void reset() {
         Bin old = tree.getValue();
@@ -100,7 +102,7 @@ public class AdaptiveStorage extends HistogramStorage {
     }
 
     public double getValueAtPercentile(int perc) {
-        int pSum = (int) getTotal(tree) * perc / 100;
+        int pSum = getTotal(tree) * perc / 100;
         int cSum = 0;
         Bin bin = null;
 

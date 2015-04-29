@@ -1,11 +1,11 @@
 package com.tspooner.histogram;
 
 // Import statements
-import java.util.Random;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.io.IOException;
+
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * A {@code Histogram} object that allows a client estimate the probability distribution
@@ -157,7 +157,7 @@ public class Histogram {
             toFile.print(store.toCsv());
 		} catch (FileNotFoundException e) {
 			System.out.println(e.toString());
-			return false;
+            return false;
 		} finally {
 			if (toFile != null)
 				toFile.close();

@@ -1,8 +1,9 @@
 package com.tspooner.histogram;
 
 // Import statements
-import java.util.List;
+
 import java.util.ArrayList;
+import java.util.List;
 
 abstract class HistogramStorage {
     protected int total = 0;
@@ -11,10 +12,6 @@ abstract class HistogramStorage {
     public abstract void reset();
 
     public abstract void add(double value);
-    public void add(double[] values) {
-        for (double value : values)
-            this.add(value);
-    }
 
     public int getTotal() { return total; }
 
